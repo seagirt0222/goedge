@@ -1,0 +1,33 @@
+version: "3"
+
+networks:
+  goedge:
+    external: false
+
+services:
+  mysqld:
+    image: mysql:8
+    container_name: mysqld
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=edges
+      - MYSQL_PASSWORD=edges
+      - MYSQL_DATABASE=edges
+    networks:
+      - goedge
+    volumes:
+      - ./data/db/mysql:/var/lib/mysql:rw
+    restart: always
+
+  edge-admin:
+    image: icodex/edge-admin:latest
+    container_name: edge-admin
+    ports:
+      - 7788:7788/tcp
+      - 8001:8001/tcp
+    networks:
+      - goedge
+    volumes:
+      - ./data/edge-admin/configs:/usr/local/goedge/edge-admin/configs
+      - ./data/edge-api/configs:/usr/local/goedge/edge-admin/edge-api/configs
+    restart: always
